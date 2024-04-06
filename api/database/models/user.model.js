@@ -33,4 +33,4 @@ export const UserModel = sequelize.define('users', {
         type: DataTypes.STRING,
         allowNull: false
     }
-});
+})

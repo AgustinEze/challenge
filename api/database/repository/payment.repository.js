@@ -133,7 +133,7 @@ export class PaymentRepository {
                 },order:[['createdAt', 'DESC']]
             })
             if(!payments.length) throw new Error('No se encontraron pagos')
-            console.log('asdfasdfasdfasdfasdfasdfas')
+            
             return payments
         }catch(error){
             console.error(error)

@@ -30,10 +30,11 @@ export class UserRepository {
         try {
             const user = await UserModel.findOne({
                 where: {
-                    ...(props?.email && { email: props?.email }
-                    ),
-                    ...(props?.username && { username: props?.username }
-                    )
+                    [Op.or]:[
+                        { email: props?.user },
+                        { username: props?.user }
+                    ]
+                   
                 }
             })
             if (!user) {

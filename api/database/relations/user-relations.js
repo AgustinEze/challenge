@@ -1,4 +1,4 @@
-import {  UserModel } from "../models/User";
+import {  UserModel } from "../models/User"
 import {PaymentModel} from '../models/Payment'
 
 UserModel.hasMany(PaymentModel, { 
@@ -10,4 +10,4 @@ PaymentModel.belongsTo(UserModel, {
     as: 'user', 
     foreignKey: 'user_id',
     targetKey: 'user_id'
- });
+ })

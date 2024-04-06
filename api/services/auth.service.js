@@ -9,8 +9,7 @@ export class AuthService {
   }
   
   static encryptPassword(password, salt) {
-    console.log('pass', password)
-    console.log('salt', salt)
+ 
 		return crypto
     .createHash('RSA-SHA256')
     .update(password)
@@ -32,7 +31,7 @@ export class AuthService {
 
   #parseData(username, email, password) {
 
-    const userSalt = this.#generateUserSalt();
+    const userSalt = this.#generateUserSalt()
     const hashedPassword = AuthService.encryptPassword(password, userSalt)
     const token = this.#generateToken({username, email})
  
@@ -42,7 +41,7 @@ export class AuthService {
       password: hashedPassword,
       user_salt: userSalt,
       token
-    };
+    }
   }
 
 }

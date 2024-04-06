@@ -28,5 +28,5 @@ export const PaymentModel = sequelize.define('payments', {
         type: DataTypes.STRING,
         allowNull: false
     },
-});
+})
 

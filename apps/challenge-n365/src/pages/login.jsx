@@ -2,23 +2,8 @@
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { LoginInput } from "../components/LoginInput.jsx"
 
-const Button = ({ handleClick, label }) => {
-    return (
-        <button onClick={handleClick}>
-            {label}
-        </button>
-    )
-}
-
-const LoginInput = ({ label, children }) => {
-    return (
-        <div>
-            <h3>{label}</h3>
-            {children}
-        </div>
-    )
-}
 
 export const LoginView = () => {
     const [formData, setFormData] = useState({ user: '', password: '' })
@@ -76,7 +61,9 @@ export const LoginView = () => {
                             onChange={handleChange}
                         />
                     </LoginInput>
-                    <Button label='Iniciar sesion' handleClick={() => { }} />
+                    <button type="submit">
+                        Iniciar sesion
+                    </button>
                     <Link to="/register">
                         <h2>Registrarse</h2>
                     </Link>

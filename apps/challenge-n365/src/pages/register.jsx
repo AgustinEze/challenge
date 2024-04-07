@@ -1,8 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LoginInput } from '../components/LoginInput.jsx'
+import dayjs from 'dayjs'
+import Cookies from 'js-cookie'
+import { useAuth } from '../hooks/useAuth.jsx'
+const BACKEND_URL = 'http://localhost:3000'
 
 export const RegisterView = () => {
+    const {handleInitAuth} = useAuth()
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -30,7 +35,7 @@ export const RegisterView = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:3000/user/register', {
+            const response = await fetch(`${BACKEND_URL}/user/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -39,6 +44,10 @@ export const RegisterView = () => {
             })
 
             if (response.ok) {
+                const auth = await response.json()
+                const expires = dayjs().add(8, 'hour').toDate()
+                Cookies.set('challenge.token', auth.token, { expires, sameSite: 'strict' })
+                handleInitAuth()
                 navigate('/home')
             } else {
                 const { error } = await response.json()

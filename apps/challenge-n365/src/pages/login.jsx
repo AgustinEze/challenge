@@ -3,9 +3,14 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { LoginInput } from "../components/LoginInput.jsx"
+import dayjs from "dayjs"
+import Cookies from 'js-cookie'
+import { useAuth } from "../hooks/useAuth.jsx"
+const BACKEND_URL = 'http://localhost:3000'
 
 
 export const LoginView = () => {
+    const {handleInitAuth} = useAuth()
     const [formData, setFormData] = useState({ user: '', password: '' })
     const navigate = useNavigate()
 
@@ -18,7 +23,7 @@ export const LoginView = () => {
         e.preventDefault()
 
         try {
-            const response = await fetch('http://localhost:3000/user/login', {
+            const response = await fetch(`${BACKEND_URL}/user/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,6 +32,10 @@ export const LoginView = () => {
             })
 
             if (response.ok) {
+                const auth = await response.json()
+                const expires = dayjs().add(8, 'hour').toDate()
+                Cookies.set('challenge.token', auth.token, { expires, sameSite: 'strict' })
+                handleInitAuth()
                 navigate('/home')
             } else {
                 const { error } = await response.json()

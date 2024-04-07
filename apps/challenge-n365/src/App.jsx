@@ -1,13 +1,14 @@
-import { Navigate, Route, BrowserRouter, Routes } from "react-router-dom"
+import {  Route, Routes } from "react-router-dom"
 import { LoginView } from "./pages/login"
 
 import { HomeView } from "./pages/home"
 import { RegisterView } from "./pages/register"
+import { SessionProvider } from "./provider/SessionProvider"
+
 
 export const App = () => {
     return (
-        
-        <BrowserRouter>
+        <SessionProvider>
 
             <Routes>
                 <Route
@@ -22,9 +23,9 @@ export const App = () => {
                     path={`/register`}
                     element={<RegisterView />}
                 />
-                <Route path="/" element={<Navigate to={'/login'} />} />
+                 
             </Routes>
-        </BrowserRouter>
+        </SessionProvider>
     )
 }
 

@@ -1,12 +1,17 @@
 import  { useState } from 'react';
+import { useAuth } from '../hooks/useAuth.jsx';
+const BACKEND_URL = 'http://localhost:3000'
+
 
 // eslint-disable-next-line react/prop-types
 export const CreatePayment = ({setFlag}) => {
+  const {user} = useAuth()
   const [formData, setFormData] = useState({
-    amount: '',
+    amount: 0,
     receiver: '',
     date: '',
-    reason: ''
+    reason: '',
+    user_id: user.user_id
   });
 
   const handleChange = (e) => {
@@ -16,7 +21,6 @@ export const CreatePayment = ({setFlag}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     // Validación de campos
     if (!formData.amount || !formData.receiver || !formData.date || !formData.reason) {
       alert('Por favor, complete todos los campos');
@@ -25,22 +29,23 @@ export const CreatePayment = ({setFlag}) => {
 
     // Envío de datos al servidor
     try {
-      const response = await fetch('http://localhost:3000/payments/create', {
+      const response = await fetch(`${BACKEND_URL}/payments/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({...formData, amount: Number(formData.amount)})
       });
 
       if (response.ok) {
         alert('Pago creado exitosamente');
         // Limpiar el formulario después de enviar los datos
         setFormData({
-          amount: '',
+          amount: 0,
           receiver: '',
           date: '',
-          reason: ''
+          reason: '',
+          user_id: user.user_id
         });
         setFlag(false)
       } else {

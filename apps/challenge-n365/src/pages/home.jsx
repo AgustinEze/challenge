@@ -1,16 +1,26 @@
 import { useState, useEffect, useMemo } from 'react';
-import { CreatePayment } from './payment';
+import { CreatePayment } from './payment.jsx';
+import { useAuth } from '../hooks/useAuth.jsx';
+import { Navigate, } from 'react-router-dom'
+const BACKEND_URL = 'http://localhost:3000'
+
+
 
 export const HomeView = () => {
+    const { isAuthenticated, user } = useAuth()
+    if (!isAuthenticated) {
+        return <Navigate to={'/login'} replace />
+    }
     const [payments, setPayments] = useState([]);
-    const [sortBy, setSortBy] = useState('createdAt'); // Por defecto, ordenar por fecha
-    const [sortOrder, setSortOrder] = useState('DESC'); // Por defecto, ordenar de más reciente a más antigua
-    const [flag, setFlag]  = useState(false)
+    const [sortBy, setSortBy] = useState('createdAt');
+    const [sortOrder, setSortOrder] = useState('DESC'); 
+    const [flag, setFlag] = useState(false)
+    const [search, setSearch] = useState('')
 
     useEffect(() => {
         const fetchPayments = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/payments/all/13b2f543-0baa-465a-a33e-e37dd1f82bf7?order=${sortOrder}&key=${sortBy}`);
+                const response = await fetch(`${BACKEND_URL}/payments/all/${user.user_id}?order=${sortOrder}&key=${sortBy}&search=${search}`);
                 if (response.ok) {
                     const data = await response.json();
                     setPayments(data);
@@ -24,7 +34,7 @@ export const HomeView = () => {
         };
 
         fetchPayments();
-    }, [sortBy, sortOrder]);
+    }, [sortBy, sortOrder, flag, search]);
 
     const handleSortChange = (event) => {
         const { name, value } = event.target;
@@ -37,27 +47,35 @@ export const HomeView = () => {
 
     const renderPayments = useMemo(() => {
         return (
-            payments.map((payment) => (
-                <li key={payment.id}>
+            payments.map((payment, index) => (
+                <li key={index}>
                     Fecha: {payment.createdAt}, Motivo: {payment.reason}, Destinatario: {payment.receiver}, Monto: {payment.amount}
                 </li>
             ))
 
         )
-    }, [payments])
-
-    const renderFormNewPayment = useMemo(()=>{
-        if(flag){
+    }, [payments, user.username])
+    const renderFormNewPayment = useMemo(() => {
+        if (flag) {
             return (
-                <CreatePayment setFlag={setFlag}/>
+                <CreatePayment setFlag={setFlag} />
             )
         }
         return null
-    },[flag])
+    }, [flag])
 
+    const handleSearch = (event) => {
+        if (event.target.value.length > 2) {
+
+            setSearch(event.target.value)
+        } else {
+            setSearch('')
+        }
+
+    }
     return (
         <div>
-            <h1>¡Bienvenido!</h1>
+            <h1>¡Bienvenido {user.username}!</h1>
             <h2>Transacciones</h2>
             <div>
                 <label>Ordenar por:</label>
@@ -71,11 +89,17 @@ export const HomeView = () => {
                     <option value="DESC">Más reciente primero</option>
                     <option value="ASC">Más antiguo primero</option>
                 </select>
+                <input
+                    type="text"
+                    placeholder="Escriba para buscar"
+                    name="search"
+                    onChange={handleSearch} />
+                
             </div>
             <ul>
                 {renderPayments}
             </ul>
-            <button onClick={()=>setFlag(true)}>Crear nuevo pago</button>
+            <button onClick={() => setFlag(true)}>Crear nuevo pago</button>
             {renderFormNewPayment}
         </div>
     );
